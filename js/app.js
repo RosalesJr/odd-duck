@@ -12,7 +12,12 @@ let imgThree = document.getElementById('img-three');
 let resultBtn = document.getElementById('show-results-btn');
 let canvasElem = document.getElementById('my-chart');
 
-// CONSTRUCTOR FUNCTION for Products
+// GETTING DATA OUT OF LOCAL STORAGE
+
+let retrProducts = localStorage.getItem('products');
+let parsedProducts = JSON.parse(retrProducts);
+
+// CONSTRUCTOR FUNCTION FOR PRODUCTS
 
 function Product(name, photoExtension = 'jpg') {
   this.name = name;
@@ -25,25 +30,30 @@ function Product(name, photoExtension = 'jpg') {
 
 
 //  OBJECT CREATION
-new Product('bag');
-new Product('banana');
-new Product('bathroom');
-new Product('boots');
-new Product('breakfast');
-new Product('bubblegum');
-new Product('chair');
-new Product('cthulhu');
-new Product('dog-duck');
-new Product('dragon');
-new Product('pen');
-new Product('pet-sweep');
-new Product('scissors');
-new Product('shark');
-new Product('sweep', 'png');
-new Product('tauntaun');
-new Product('unicorn');
-new Product('water-can');
-new Product('wine-glass');
+if (retrProducts) {
+  myProduct = parsedProducts;
+} else {
+
+  new Product('bag');
+  new Product('banana');
+  new Product('bathroom');
+  new Product('boots');
+  new Product('breakfast');
+  new Product('bubblegum');
+  new Product('chair');
+  new Product('cthulhu');
+  new Product('dog-duck');
+  new Product('dragon');
+  new Product('pen');
+  new Product('pet-sweep');
+  new Product('scissors');
+  new Product('shark');
+  new Product('sweep', 'png');
+  new Product('tauntaun');
+  new Product('unicorn');
+  new Product('water-can');
+  new Product('wine-glass');
+}
 
 
 // HELPER FUNCTIONS
@@ -98,6 +108,11 @@ function handleClick(event) {
   renderImgs();
 
   if (totalVotes === 0) {
+    // STARTING LOCAL STORAGE/ STRINGIFY THE DATA
+    let stringifiedProducts = JSON.stringify(myProduct);
+
+    // ADDING TO LOCAL STORAGE
+    localStorage.setItem('products', stringifiedProducts);
     imgContainer.removeEventListener('click', handleClick);
   }
 }
