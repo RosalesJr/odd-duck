@@ -1,21 +1,20 @@
 'use strict';
 
-// ******** GLOBAL VARIABLES **************
+//  GLOBAL VARIABLES
 let totalVotes = 25;
 let myProduct = [];
 
-// ********* DOM REFERENCES ****************
+//  DOM REFERENCES
 let imgContainer = document.getElementById('img-container');
 let imgOne = document.getElementById('img-one');
 let imgTwo = document.getElementById('img-two');
 let imgThree = document.getElementById('img-three');
-
 let resultBtn = document.getElementById('show-results-btn');
-let resultsList = document.getElementById('results-list');
+let canvasElem = document.getElementById('my-chart');
 
-// ********* CONSTRUCTOR FUNCTION *************
+// CONSTRUCTOR FUNCTION for Products
 
-function Product(name, photoExtension = 'jpg'){
+function Product(name, photoExtension = 'jpg') {
   this.name = name;
   this.photo = `img/${name}.${photoExtension}`;
   this.views = 0;
@@ -25,7 +24,7 @@ function Product(name, photoExtension = 'jpg'){
 }
 
 
-// ********* OBJECT CREATION ******************
+//  OBJECT CREATION
 new Product('bag');
 new Product('banana');
 new Product('bathroom');
@@ -47,22 +46,25 @@ new Product('water-can');
 new Product('wine-glass');
 
 
-// *********** HELPER FUNCTIONS ***************
+// HELPER FUNCTIONS
 
-function randomIndexGenerator(){
+function randomIndexGenerator() {
   return Math.floor(Math.random() * myProduct.length);
 }
 
-function renderImgs(){
-  let imgOneIndex = randomIndexGenerator();
-  let imgTwoIndex = randomIndexGenerator();
-  let imgThreeIndex = randomIndexGenerator();
+let productIndexArr = [];
 
-  // random generator
-  while(imgOneIndex === imgTwoIndex || imgTwoIndex === imgThreeIndex || imgOneIndex === imgThreeIndex){
-    imgTwoIndex = randomIndexGenerator();
-    imgThreeIndex = randomIndexGenerator();
+function renderImgs() {
+  while (productIndexArr.length < 6) {
+    let randomNum = randomIndexGenerator();
+    if (!productIndexArr.includes(randomNum)) {
+      productIndexArr.push(randomNum);
+    }
   }
+
+  let imgOneIndex = productIndexArr.shift();
+  let imgTwoIndex = productIndexArr.shift();
+  let imgThreeIndex = productIndexArr.shift();
 
   imgOne.src = myProduct[imgOneIndex].photo;
   imgOne.alt = myProduct[imgOneIndex].name;
@@ -80,15 +82,14 @@ function renderImgs(){
 
 renderImgs();
 
-// *********** EVENT HANDLERS  *****************
+// EVENT HANDLERS
 
-function handleClick(event){
-  // - click - on the imgs - rerender new images(increase the views on the Products that are rendered) - count the vote of the Product that was clicked/ lower our total number of votes
+function handleClick(event) {
   let imgClicked = event.target.name;
   console.dir(imgClicked);
 
-  for(let i=0; i < myProduct.length; i++){
-    if(imgClicked === myProduct[i].name){
+  for (let i = 0; i < myProduct.length; i++) {
+    if (imgClicked === myProduct[i].name) {
       myProduct[i].votes++;
     }
   }
@@ -96,22 +97,90 @@ function handleClick(event){
 
   renderImgs();
 
-  if(totalVotes === 0){
+  if (totalVotes === 0) {
     imgContainer.removeEventListener('click', handleClick);
   }
 }
 
-function handleShowResults(){
-  if(totalVotes === 0){
-    for(let i = 0; i < myProduct.length; i++){
-      let liElem = document.createElement('li');
-      liElem.textContent = `${myProduct[i].name}: views: ${myProduct[i].views}, votes: ${myProduct[i].votes}`;
-      resultsList.appendChild(liElem);
-    }
+function handleShowResults() {
+  if (totalVotes === 0) {
+    renderChart();
     resultBtn.removeEventListener('click', handleShowResults);
   }
 }
 
-// ********* EVENT LISTENERS *******************
+function renderChart() {
+
+  // CREATING EMPTY ARRAYS TO POPULATE WITH THE INFO FOR the CHART
+
+  let prodNames = [];
+  let prodVotes = [];
+  let prodViews = [];
+
+  // THIS FOR LOOP TAKES ALL THE DATA AFTER THE VOTING ROUNDS ARE COMPLETED AND POPULATES THE ARRAYS
+  for (let i = 0; i < myProduct.length; i++) {
+    prodNames.push(myProduct[i].name);
+    prodViews.push(myProduct[i].views);
+    prodVotes.push(myProduct[i].votes);
+  }
+
+  // CHART.JS Config
+  let theChart = {
+    type: 'bar',
+    data: {
+      labels: prodNames,
+      datasets: [{
+        label: '# of Votes',
+        data: prodVotes,
+        backgroundColor: [
+          'blue'
+        ],
+        borderColor: [
+          '#ff7300',
+          '#fffb00',
+          '#48ff00',
+          '#00ffd5',
+          '#002bff',
+          '#7a00ff',
+          '#ff00c8',
+          '#ff0000'
+        ],
+        borderWidth: 1
+      },
+      {
+        label: '# of Views',
+        data: prodViews,
+        backgroundColor: [
+          'white'
+        ],
+        borderColor: [
+          '#ff0000',
+          '#ff7300',
+          '#fffb00',
+          '#48ff00',
+          '#00ffd5',
+          '#002bff',
+          '#7a00ff',
+          '#ff00c8',
+          '#ff0000'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  };
+
+  // CONSTRUCTOR CALL TO RENDER THE CHART
+  new Chart(canvasElem, theChart);
+
+}
+
+// EVENT LISTENERS
 imgContainer.addEventListener('click', handleClick);
 resultBtn.addEventListener('click', handleShowResults);
