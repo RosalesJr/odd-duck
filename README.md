@@ -13,5 +13,6 @@ I built this site to practice html dom manipulation and js functions.
 - [Learn JavaScript](https://developer.mozilla.org/en-US/docs/Learn/JavaScript)
 - [JavaScript Object Basics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects#using_this_for_object_references)
 - [Google Font](https://developers.google.com/fonts)
+- [Chart.js](https://www.jsdelivr.com/package/npm/chart.js)
 
 ### Reflections and Comments
